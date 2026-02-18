@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { WeddingData } from '../types';
 import { Curtain } from './Curtain';
 import { MultiStageScratch } from './MultiStageScratch';
@@ -11,7 +11,7 @@ interface InvitationViewProps {
   isShared?: boolean;
 }
 
-export const InvitationView: React.FC<InvitationViewProps> = ({ data, isShared = false }) => {
+export const InvitationView: React.FC<InvitationViewProps> = ({ data }) => {
   const [curtainOpen, setCurtainOpen] = useState(false);
   const [nikahRevealed, setNikahRevealed] = useState(false);
 
@@ -61,19 +61,8 @@ export const InvitationView: React.FC<InvitationViewProps> = ({ data, isShared =
   const nikahDateInfo = formatDate(data.nikahDate);
   const valimaDateInfo = formatDate(data.valimaDate);
 
-  const getShareableUrl = () => {
-    const json = JSON.stringify(data);
-    const u8 = new TextEncoder().encode(json);
-    const base64 = btoa(String.fromCharCode(...u8))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
-    const baseUrl = window.location.origin + window.location.pathname;
-    return `${baseUrl}#view=${base64}`;
-  };
-
   const shareInvitation = async () => {
-    const url = getShareableUrl();
+    const url = window.location.origin + window.location.pathname;
     const text = `Asalam-o-Alaikum! 🌹\n\nYou are cordially invited to the wedding of ${data.brideName} & ${data.groomName}.\n\nView our digital invitation here:\n${url}`;
     
     if (navigator.share) {
@@ -105,10 +94,10 @@ export const InvitationView: React.FC<InvitationViewProps> = ({ data, isShared =
                <span className="font-cursive text-4xl -rotate-45 font-bold" style={{ color: data.themeColor }}>&</span>
              </div>
           </div>
-          <h1 className="text-6xl sm:text-7xl font-cursive mb-6 gold-shimmer font-bold leading-tight drop-shadow-sm">
+          <h1 className="text-5xl sm:text-6xl font-cursive mb-6 gold-shimmer font-bold leading-tight drop-shadow-sm px-4">
             {data.brideName} & {data.groomName}
           </h1>
-          <p className="font-serif text-xl text-black max-w-sm italic mb-10 leading-relaxed px-4 font-medium">
+          <p className="font-serif text-lg text-black max-w-sm italic mb-10 leading-relaxed px-4 font-medium">
             {data.welcomeMessage}
           </p>
           <div className="mt-20 text-[10px] text-[#d4af37] font-bold uppercase tracking-[0.6em] animate-bounce">
@@ -140,7 +129,6 @@ export const InvitationView: React.FC<InvitationViewProps> = ({ data, isShared =
              />
           </div>
 
-          {/* GAZÉBO ILLUSTRATION - Placeholder avatar removed as requested */}
           <div className="mb-12 opacity-90 max-w-[280px]">
              <img 
                src="https://vpssqzdfjnyovqofymst.supabase.co/storage/v1/object/public/test//gazebo.png" 
@@ -216,7 +204,7 @@ export const InvitationView: React.FC<InvitationViewProps> = ({ data, isShared =
              <div className="mb-12 sway">
                <p className="font-arabic text-6xl text-[#d4af37] drop-shadow-md">جزاك الله خيرا</p>
              </div>
-             <p className="font-cursive text-6xl mb-8 gold-shimmer font-bold">With Prayers & Love,</p>
+             <p className="font-cursive text-5xl mb-8 gold-shimmer font-bold">With Prayers & Love,</p>
              <div className="flex flex-col gap-3">
                 <p className="text-2xl font-serif text-black font-black">{data.brideName} & {data.groomName}</p>
                 <p className="text-xs text-gray-500 uppercase tracking-[0.3em] mt-12 font-bold italic">Families of both the Bride & Groom</p>

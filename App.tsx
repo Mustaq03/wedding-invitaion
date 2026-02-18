@@ -18,7 +18,6 @@ const DEFAULT_WEDDING: WeddingData = {
   valimaVenue: 'Imperial Convention',
   valimaAddress: 'Sunkesula Road, Kurnool',
   valimaMapLink: 'https://maps.app.goo.gl/zjK4jVFf8Jcfcuwk8',
-  palaceLogo: '6-61554_wedding-hall-logo-png-transparent-png.png',
   welcomeMessage: 'With the grace of Allah (SWT), we invite you to celebrate the union of our souls.',
   themeColor: '#d4af37',
   dressCode: 'Formal Islamic Attire / Modest Wear',
@@ -35,13 +34,18 @@ const App: React.FC = () => {
       const hash = window.location.hash;
       if (hash.startsWith('#view=')) {
         try {
-          const encodedData = hash.replace('#view=', '');
-          const decodedData = JSON.parse(atob(encodedData));
+          // Robust Unicode-safe Base64 decoding
+          let base64 = hash.replace('#view=', '').replace(/-/g, '+').replace(/_/g, '/');
+          while (base64.length % 4) base64 += '=';
+          
+          const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+          const decodedData = JSON.parse(new TextDecoder().decode(bytes));
+          
           setWeddingData(decodedData);
           setMode(AppMode.VIEWER);
-          setIsSharedView(true); // LOCK GUESTS OUT OF ADMIN
+          setIsSharedView(true);
         } catch (e) {
-          console.error("Failed to parse shared data", e);
+          console.error("Failed to parse shared data (likely encoding issue)", e);
           setMode(AppMode.LOGIN);
           setIsSharedView(false);
         }
@@ -78,9 +82,8 @@ const App: React.FC = () => {
 
       {mode === AppMode.VIEWER && (
         <div className="relative">
-          <InvitationView data={weddingData} />
+          <InvitationView data={weddingData} isShared={isSharedView} />
           
-          {/* Dashboard button only visible to YOU (the admin) when NOT using a shared link */}
           {!isSharedView && (
             <button 
               onClick={() => setMode(AppMode.ADMIN)}

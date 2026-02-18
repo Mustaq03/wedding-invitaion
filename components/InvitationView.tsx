@@ -8,9 +8,10 @@ import confetti from 'canvas-confetti';
 
 interface InvitationViewProps {
   data: WeddingData;
+  isShared?: boolean;
 }
 
-export const InvitationView: React.FC<InvitationViewProps> = ({ data }) => {
+export const InvitationView: React.FC<InvitationViewProps> = ({ data, isShared = false }) => {
   const [curtainOpen, setCurtainOpen] = useState(false);
   const [nikahRevealed, setNikahRevealed] = useState(false);
 
@@ -60,8 +61,19 @@ export const InvitationView: React.FC<InvitationViewProps> = ({ data }) => {
   const nikahDateInfo = formatDate(data.nikahDate);
   const valimaDateInfo = formatDate(data.valimaDate);
 
+  const getShareableUrl = () => {
+    const json = JSON.stringify(data);
+    const u8 = new TextEncoder().encode(json);
+    const base64 = btoa(String.fromCharCode(...u8))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+    const baseUrl = window.location.origin + window.location.pathname;
+    return `${baseUrl}#view=${base64}`;
+  };
+
   const shareInvitation = async () => {
-    const url = window.location.href;
+    const url = getShareableUrl();
     const text = `Asalam-o-Alaikum! 🌹\n\nYou are cordially invited to the wedding of ${data.brideName} & ${data.groomName}.\n\nView our digital invitation here:\n${url}`;
     
     if (navigator.share) {
@@ -128,7 +140,7 @@ export const InvitationView: React.FC<InvitationViewProps> = ({ data }) => {
              />
           </div>
 
-          {/* GAZÉBO ILLUSTRATION */}
+          {/* GAZÉBO ILLUSTRATION - Placeholder avatar removed as requested */}
           <div className="mb-12 opacity-90 max-w-[280px]">
              <img 
                src="https://vpssqzdfjnyovqofymst.supabase.co/storage/v1/object/public/test//gazebo.png" 

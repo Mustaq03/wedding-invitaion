@@ -56,11 +56,22 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ data, onUpdate, onPrevie
   };
 
   const handleShare = () => {
-    const encoded = btoa(JSON.stringify(data));
-    const baseUrl = window.location.href.split('#')[0];
-    const url = `${baseUrl}#view=${encoded}`;
-    navigator.clipboard.writeText(url);
-    alert("Invitation link copied to clipboard! Share this link to show ONLY the invitation.");
+    // Robust Unicode-safe Base64 encoding
+    const json = JSON.stringify(data);
+    const u8 = new TextEncoder().encode(json);
+    const base64 = btoa(String.fromCharCode(...u8))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+    
+    const baseUrl = window.location.origin + window.location.pathname;
+    const url = `${baseUrl}#view=${base64}`;
+    
+    navigator.clipboard.writeText(url).then(() => {
+      alert("Link copied! This link handles Arabic text and will show ONLY the invitation to guests.");
+    }).catch(err => {
+      prompt("Copy this link to share:", url);
+    });
   };
 
   const inputClass = "w-full p-3 rounded-lg border border-gray-400 bg-white text-black outline-none focus:ring-2 focus:ring-[#d4af37] focus:border-transparent transition-all placeholder:text-gray-400";

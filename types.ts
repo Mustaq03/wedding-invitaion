@@ -17,7 +17,6 @@ export interface WeddingData {
   valimaAddress: string;
   valimaMapLink: string;
 
-  palaceLogo: string; // URL to logo
   welcomeMessage: string;
   themeColor: string;
   dressCode: string;
